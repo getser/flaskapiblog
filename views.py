@@ -51,6 +51,17 @@ def get_posts():
     return jsonify({'posts': posts})
 
 
+# get visitors posts: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/my_posts
+@app.route('/flaskapiblog/api/v1.0/posts/my_posts', methods=['GET'])
+@auth.login_required
+def get_my_posts():
+    all_my_posts = Post.query.filter_by(visitor_id=g.visitor.id)
+    posts = []
+    for rec in all_my_posts:
+        posts.append(rec._asdict())
+    return jsonify({'posts': posts})
+
+
 # get post 3: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/3
 @app.route('/flaskapiblog/api/v1.0/posts/<int:post_id>', methods=['GET'])
 def get_post(post_id):
