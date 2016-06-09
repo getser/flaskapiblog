@@ -13,6 +13,16 @@ from flask_httpauth import HTTPBasicAuth
 
 auth = HTTPBasicAuth()
 
+api_descr = 'This is the REST API based FLASK application. Current API version is 1.0.'
+post_descr = 'Post resouce gives access to "Post" objects and supports described actions.'
+visitor_descr = 'Visitor resouce gives access to "Visitor" objects and supports described actions.'
+additional = 'Resources examples are explained by using "curl" utility.'
+
+post_actions = dict()
+visitor_actions = dict()
+
+INFO = {"API_description":[api_descr, post_descr, visitor_descr, additional], 'post_actions':post_actions, 'visitors_actions':visitor_actions}
+
 @auth.verify_password
 def verify_password(email_or_token, password):
     # first try to authenticate by token
@@ -36,12 +46,8 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
-@app.route('/flaskapiblog/api')
-def index():
-    return "Api docs is going to be here."
-
-
-# get all posts: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
+# get_all_posts: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
+post_actions['get all posts'] = "curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts"
 @app.route('/flaskapiblog/api/v1.0/posts', methods=['GET'])
 def get_posts():
     all_posts = Post.query.all()
@@ -51,7 +57,8 @@ def get_posts():
     return jsonify({'posts': posts})
 
 
-# get all posts paginated with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/paginated/<int:page>
+# get_all_posts_paginated with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/paginated/<int:page>
+post_actions['get all posts paginated with email/password or token'] = "curl -u visitor_email@gov.ua:visitor_password -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/paginated/<int:page>"
 @app.route('/flaskapiblog/api/v1.0/posts/paginated/<int:page>', methods=['GET'])
 @auth.login_required
 def get_all_posts(page):
@@ -85,7 +92,8 @@ def get_all_posts(page):
     return jsonify({'posts': posts})
 
 
-# get visitors posts with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/my_posts
+# get_visitors_posts with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/my_posts
+post_actions['get visitors posts with email/password or token'] = 'curl -u visitor_email@gov.ua:visitor_password -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/my_posts'
 @app.route('/flaskapiblog/api/v1.0/posts/my_posts', methods=['GET'])
 @auth.login_required
 def get_my_posts():
@@ -96,7 +104,8 @@ def get_my_posts():
     return jsonify({'posts': posts})
 
 
-# get post 3: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/3
+# get_post 3: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/3
+post_actions['get post'] = 'curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/<int:post_id>'
 @app.route('/flaskapiblog/api/v1.0/posts/<int:post_id>', methods=['GET'])
 def get_post(post_id):
     post = Post.query.get(post_id)
@@ -105,7 +114,8 @@ def get_post(post_id):
     return jsonify({'post': post._asdict()})
 
 
-# add post: curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
+# add_post: curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
+post_actions['add post'] = '''curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts'''
 @app.route('/flaskapiblog/api/v1.0/posts', methods=['POST'])
 @auth.login_required
 def create_post():
@@ -124,8 +134,9 @@ def create_post():
     return jsonify({'post': post._asdict()}), 201, {'Location': url_for('get_post', post_id=post.id, _external = True)}
 
 
-# delete post 6 with email/password: curl -u ss@gov.ua:ss -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/6
-# delete post 13 with token: curl -u "eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NTQ2NDM1MywiaWF0IjoxNDY1NDYzNzUzfQ.eyJpZCI6NX0.y92RwpJKnfFV_N9GaKooSU9noOJmeK3wAZ0TAc58uuU":none -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/13
+# delete_post 6 with email/password: curl -u ss@gov.ua:ss -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/6
+# delete_post 13 with token: curl -u "eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NTQ2NDM1MywiaWF0IjoxNDY1NDYzNzUzfQ.eyJpZCI6NX0.y92RwpJKnfFV_N9GaKooSU9noOJmeK3wAZ0TAc58uuU":none -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/13
+post_actions['delete post with email/password or token'] = 'curl -u visitor_token:none -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/13'
 @app.route('/flaskapiblog/api/v1.0/posts/<int:post_id>', methods=['DELETE'])
 @auth.login_required
 def delete_post(post_id):
@@ -137,7 +148,8 @@ def delete_post(post_id):
     return jsonify({'result': True})
 
 
-# find posts: curl -i -H "Content-Type: application/json" -X POST -d '{"text":"text to be found"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/find
+# find_posts: curl -i -H "Content-Type: application/json" -X POST -d '{"text":"text to be found"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/find
+post_actions['find posts'] = '''curl -i -H "Content-Type: application/json" -X POST -d '{"text":"text to be found"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/find'''
 @app.route('/flaskapiblog/api/v1.0/posts/find', methods=['POST'])
 def find_posts():
     text_to_find = request.json.get('text')
@@ -148,7 +160,8 @@ def find_posts():
     return jsonify({'posts': posts})
 
 
-# get all visitors: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors
+# get_all_visitors: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors
+visitor_actions['get all visitors'] = 'curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors'
 @app.route('/flaskapiblog/api/v1.0/visitors', methods=['GET'])
 def get_visitors():
     all_visitors = Visitor.query.all()
@@ -158,7 +171,8 @@ def get_visitors():
     return jsonify({'visitors': visitors})
 
 
-# get visitor 2: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/2
+# get_visitor 2: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/2
+visitor_actions['get visitor'] = 'curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/<int:visitor_id>'
 @app.route('/flaskapiblog/api/v1.0/visitors/<int:visitor_id>', methods=['GET'])
 def get_visitor(visitor_id):
     visitor = Visitor.query.get(visitor_id)
@@ -167,7 +181,8 @@ def get_visitor(visitor_id):
     return jsonify({'visitor': visitor._asdict()})
 
 
-# get profile with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/my_profile
+# get_profile with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/my_profile
+visitor_actions['get profile with email/password or token'] = 'curl -u visitor_email@gov.ua:visitor_password -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/my_profile'
 @app.route('/flaskapiblog/api/v1.0/visitors/my_profile', methods=['GET'])
 @auth.login_required
 def get_profile():
@@ -175,7 +190,8 @@ def get_profile():
     return jsonify({'visitor': visitor._asdict()})
 
 
-# add visitor: curl -i -H "Content-Type: application/json" -X POST -d '{"email":"visitors_email@gov.ua","password":"visitors_password"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors
+# add_visitor: curl -i -H "Content-Type: application/json" -X POST -d '{"email":"visitors_email@gov.ua","password":"visitors_password"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors
+visitor_actions['add visitor'] = '''curl -i -H "Content-Type: application/json" -X POST -d '{"email":"visitors_email@gov.ua","password":"visitors_password"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors'''
 @app.route('/flaskapiblog/api/v1.0/visitors', methods = ['POST'])
 def new_visitor():
     email = request.json.get('email')
@@ -191,7 +207,8 @@ def new_visitor():
     return jsonify({ 'email': visitor.email }), 201, {'Location': url_for('get_visitor', visitor_id = visitor.id, _external = True)}
 
 
-# delete visitor ssss@gov.ua:  curl -u ssss@gov.ua:password -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/6
+# delete_visitor ssss@gov.ua:  curl -u ssss@gov.ua:password -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/6
+visitor_actions['delete visitor with email/password or token'] = 'curl -u visitor_token:none -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/<int:visitor_id>'
 @app.route('/flaskapiblog/api/v1.0/visitors/<int:visitor_id>', methods=['DELETE'])
 @auth.login_required
 def delete_visitor(visitor_id):
@@ -205,9 +222,16 @@ def delete_visitor(visitor_id):
     return jsonify({'result': True})
 
 
-# get token: curl -u ss@gov.ua:password -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/token
+# get_token: curl -u ss@gov.ua:password -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/token
+visitor_actions['get token with email/password only'] = 'curl -u visitor_email@gov.ua:visitor_password -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/token'
 @app.route('/flaskapiblog/api/v1.0/token')
 @auth.login_required
 def get_auth_token():
     token = g.visitor.generate_auth_token(600)
     return jsonify({'token': token.decode('ascii'), 'duration': 600})
+
+
+# This view must be the last one
+@app.route('/flaskapiblog/api')
+def api_info():
+    return jsonify(INFO)
