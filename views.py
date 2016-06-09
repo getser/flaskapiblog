@@ -36,7 +36,7 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
-@app.route('/')
+@app.route('/flaskapiblog/api')
 def index():
     return "Api docs is going to be here."
 
@@ -137,6 +137,17 @@ def delete_post(post_id):
     return jsonify({'result': True})
 
 
+# find posts: curl -i -H "Content-Type: application/json" -X POST -d '{"text":"text to be found"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/find
+@app.route('/flaskapiblog/api/v1.0/posts/find', methods=['POST'])
+def find_posts():
+    text_to_find = request.json.get('text')
+    found_posts = Post.query.whoosh_search(text_to_find).all()
+    posts = []
+    for rec in found_posts:
+        posts.append(rec._asdict())
+    return jsonify({'posts': posts})
+
+
 # get all visitors: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors
 @app.route('/flaskapiblog/api/v1.0/visitors', methods=['GET'])
 def get_visitors():
@@ -164,7 +175,7 @@ def get_profile():
     return jsonify({'visitor': visitor._asdict()})
 
 
-# add visitor: curl -i -H "Content-Type: application/json" -X POST -d '{"visitors_email":"email@gov.ua","password":"visitors_password"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors
+# add visitor: curl -i -H "Content-Type: application/json" -X POST -d '{"email":"visitors_email@gov.ua","password":"visitors_password"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors
 @app.route('/flaskapiblog/api/v1.0/visitors', methods = ['POST'])
 def new_visitor():
     email = request.json.get('email')
@@ -180,7 +191,7 @@ def new_visitor():
     return jsonify({ 'email': visitor.email }), 201, {'Location': url_for('get_visitor', visitor_id = visitor.id, _external = True)}
 
 
-# delete visitor ssss@gov.ua:  curl -u ssss@gov.ua:ssss -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/6
+# delete visitor ssss@gov.ua:  curl -u ssss@gov.ua:password -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/6
 @app.route('/flaskapiblog/api/v1.0/visitors/<int:visitor_id>', methods=['DELETE'])
 @auth.login_required
 def delete_visitor(visitor_id):
@@ -194,7 +205,7 @@ def delete_visitor(visitor_id):
     return jsonify({'result': True})
 
 
-# get token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/token
+# get token: curl -u ss@gov.ua:password -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/token
 @app.route('/flaskapiblog/api/v1.0/token')
 @auth.login_required
 def get_auth_token():

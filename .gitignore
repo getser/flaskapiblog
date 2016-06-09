@@ -4,3 +4,4 @@
 *.mo
 *.egg
 .DS_Store
+search.db

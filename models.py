@@ -6,6 +6,8 @@ from app.my_utils import DictSerializable
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 
+import flask_whooshalchemy as whooshalchemy
+
 
 class Visitor(db.Model, DictSerializable):
     __tablename__ = "visitors"
@@ -44,6 +46,7 @@ class Visitor(db.Model, DictSerializable):
 
 class Post(db.Model, DictSerializable):
     __tablename__ = "posts"
+    __searchable__ = ['text']
     
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
@@ -54,3 +57,7 @@ class Post(db.Model, DictSerializable):
 
     def __repr__(self):
         return 'Post %r' % self.title
+
+
+
+whooshalchemy.whoosh_index(app, Post)
