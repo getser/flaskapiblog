@@ -60,17 +60,17 @@ def get_post(post_id):
     return jsonify({'post': post._asdict()})
 
 
-# add post: curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text","visitor":"visitors id"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
+# add post: curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
 @app.route('/flaskapiblog/api/v1.0/posts', methods=['POST'])
 @auth.login_required
 def create_post():
-    if not request.json or not 'title' in request.json or not 'text' in request.json or not 'visitor' in request.json :
+    if not request.json or not 'title' in request.json or not 'text' in request.json:
         abort(400)
 
     post = Post(
         title=request.json['title'],
         text=request.json['text'],
-        visitor_id=int(request.json['visitor'])
+        visitor_id=g.visitor.id
         )
 
     db.session.add(post)
