@@ -38,7 +38,7 @@ def not_found(error):
 
 @app.route('/')
 def index():
-    return "Api is going to be here."
+    return "Api docs is going to be here."
 
 
 # get all posts: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
@@ -60,7 +60,7 @@ def get_post(post_id):
     return jsonify({'post': post._asdict()})
 
 
-# add post: curl -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text","visitor":"visitors id"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
+# add post: curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text","visitor":"visitors id"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
 @app.route('/flaskapiblog/api/v1.0/posts', methods=['POST'])
 @auth.login_required
 def create_post():
@@ -79,7 +79,7 @@ def create_post():
     return jsonify({'post': post._asdict()}), 201, {'Location': url_for('get_post', post_id=post.id, _external = True)}
 
 
-# delete post 6 with authentication: curl -u ss@gov.ua:ss -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/6
+# delete post 6 with email/password: curl -u ss@gov.ua:ss -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/6
 # delete post 13 with token: curl -u "eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NTQ2NDM1MywiaWF0IjoxNDY1NDYzNzUzfQ.eyJpZCI6NX0.y92RwpJKnfFV_N9GaKooSU9noOJmeK3wAZ0TAc58uuU":none -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/13
 @app.route('/flaskapiblog/api/v1.0/posts/<int:post_id>', methods=['DELETE'])
 @auth.login_required
@@ -90,6 +90,7 @@ def delete_post(post_id):
     db.session.delete(post)
     db.session.commit()
     return jsonify({'result': True})
+
 
 # get all visitors: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors
 @app.route('/flaskapiblog/api/v1.0/visitors', methods=['GET'])
@@ -126,12 +127,15 @@ def new_visitor():
     return jsonify({ 'email': visitor.email }), 201, {'Location': url_for('get_visitor', visitor_id = visitor.id, _external = True)}
 
 
-# delete visitor 2:  curl -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/2
+# delete visitor ssss@gov.ua:  curl -u ssss@gov.ua:ssss -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/6
 @app.route('/flaskapiblog/api/v1.0/visitors/<int:visitor_id>', methods=['DELETE'])
+@auth.login_required
 def delete_visitor(visitor_id):
     visitor = Visitor.query.get(visitor_id)
     if not visitor:
         abort(404)
+    elif visitor_id != g.visitor.id:
+        return jsonify({'error': 'Not allowed'})
     db.session.delete(visitor)
     db.session.commit()
     return jsonify({'result': True})
