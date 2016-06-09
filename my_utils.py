@@ -1,4 +1,11 @@
 from collections import OrderedDict
+from flask import url_for
+
+
+def make_api_url(action, id):  # not used - delete
+    new_url =  url_for(action, id=id, _external=True)
+    return new_url
+
 
 class DictSerializable(object):
 	def _asdict(self):
