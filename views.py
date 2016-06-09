@@ -111,6 +111,14 @@ def get_visitor(visitor_id):
     return jsonify({'visitor': visitor._asdict()})
 
 
+# get profile with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/my_profile
+@app.route('/flaskapiblog/api/v1.0/visitors/my_profile', methods=['GET'])
+@auth.login_required
+def get_profile():
+    visitor = g.visitor
+    return jsonify({'visitor': visitor._asdict()})
+
+
 # add visitor: curl -i -H "Content-Type: application/json" -X POST -d '{"visitors_email":"email@gov.ua","password":"visitors_password"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors
 @app.route('/flaskapiblog/api/v1.0/visitors', methods = ['POST'])
 def new_visitor():
