@@ -51,7 +51,41 @@ def get_posts():
     return jsonify({'posts': posts})
 
 
-# get visitors posts: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/my_posts
+# get all posts paginated with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/paginated/<int:page>
+@app.route('/flaskapiblog/api/v1.0/posts/paginated/<int:page>', methods=['GET'])
+@auth.login_required
+def get_all_posts(page):
+    all_posts = Post.query.all()
+    posts = []
+    for rec in all_posts:
+        posts.append(rec._asdict())
+
+    # paginator start
+    items_per_page = 3       # !! can't be less than 1 !!
+    num_items = len(posts)
+    num_pages = num_items / items_per_page
+
+    if num_items % items_per_page != 0:
+        num_pages += 1
+
+    if page < 1:
+        page = 1
+    elif page > num_pages:
+        page = num_pages
+
+    start = (page - 1) * items_per_page
+    finish = page * items_per_page
+
+    if finish > num_items:
+        finish = num_items
+
+    posts = posts[start:finish]
+    # paginator end
+
+    return jsonify({'posts': posts})
+
+
+# get visitors posts with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/my_posts
 @app.route('/flaskapiblog/api/v1.0/posts/my_posts', methods=['GET'])
 @auth.login_required
 def get_my_posts():
