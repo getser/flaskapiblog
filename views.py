@@ -14,8 +14,8 @@ from flask_httpauth import HTTPBasicAuth
 auth = HTTPBasicAuth()
 
 api_descr = 'This is the REST API based FLASK application. Current API version is 1.0.'
-post_descr = 'Post resouce gives access to "Post" objects and supports described actions.'
-visitor_descr = 'Visitor resouce gives access to "Visitor" objects and supports described actions.'
+post_descr = 'Post resource gives access to "Post" objects and supports described actions.'
+visitor_descr = 'Visitor resource gives access to "Visitor" objects and supports described actions.'
 additional = 'Resource examples are explained using "curl" utility.'
 
 post_actions = dict()
@@ -115,8 +115,8 @@ def get_post(post_id):
     return jsonify({'post': post._asdict()})
 
 
-# add_post: curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
-post_actions['add post'] = '''curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts'''
+# add_post with email/password or token: curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts
+post_actions['add post with email/password or token'] = '''curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts'''
 @app.route('/flaskapiblog/api/v1.0/posts', methods=['POST'])
 @auth.login_required
 def create_post():

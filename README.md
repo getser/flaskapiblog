@@ -3,12 +3,12 @@
 
   Description available at "/flaskapiblog/api":
         This is the REST API based FLASK application. Current API version is 1.0.
-        Post resouce gives access to "Post" objects and supports described actions.
-        Visitor resouce gives access to "Visitor" objects and supports described actions.
+        Post resource gives access to "Post" objects and supports described actions.
+        Visitor resource gives access to "Visitor" objects and supports described actions.
         Resource examples are explained using "curl" utility.
 
       Post actions: 
-          add post: "curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts", 
+          add post with email/password or token: "curl -u ss@gov.ua:ss -i -H "Content-Type: application/json" -X POST -d '{"title":"post title","text":"post text"}' http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts", 
 
           delete post with email/password or token: "curl -u visitor_token:none -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/13",
 
