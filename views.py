@@ -16,12 +16,12 @@ auth = HTTPBasicAuth()
 api_descr = 'This is the REST API based FLASK application. Current API version is 1.0.'
 post_descr = 'Post resouce gives access to "Post" objects and supports described actions.'
 visitor_descr = 'Visitor resouce gives access to "Visitor" objects and supports described actions.'
-additional = 'Resources examples are explained by using "curl" utility.'
+additional = 'Resource examples are explained using "curl" utility.'
 
 post_actions = dict()
 visitor_actions = dict()
 
-INFO = {"API_description":[api_descr, post_descr, visitor_descr, additional], 'post_actions':post_actions, 'visitors_actions':visitor_actions}
+INFO = {"Description":[api_descr, post_descr, visitor_descr, additional], 'post_actions':post_actions, 'visitors_actions':visitor_actions}
 
 @auth.verify_password
 def verify_password(email_or_token, password):
@@ -58,6 +58,7 @@ def get_posts():
 
 
 # get_all_posts_paginated with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/paginated/<int:page>
+# get_all_posts_paginated with email/password or token: curl -u "eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NTQ2NDM1MywiaWF0IjoxNDY1NDYzNzUzfQ.eyJpZCI6NX0.y92RwpJKnfFV_N9GaKooSU9noOJmeK3wAZ0TAc58uuU":none -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/paginated/<int:page>
 post_actions['get all posts paginated with email/password or token'] = "curl -u visitor_email@gov.ua:visitor_password -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/paginated/<int:page>"
 @app.route('/flaskapiblog/api/v1.0/posts/paginated/<int:page>', methods=['GET'])
 @auth.login_required
@@ -135,7 +136,6 @@ def create_post():
 
 
 # delete_post 6 with email/password: curl -u ss@gov.ua:ss -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/6
-# delete_post 13 with token: curl -u "eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NTQ2NDM1MywiaWF0IjoxNDY1NDYzNzUzfQ.eyJpZCI6NX0.y92RwpJKnfFV_N9GaKooSU9noOJmeK3wAZ0TAc58uuU":none -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/13
 post_actions['delete post with email/password or token'] = 'curl -u visitor_token:none -i -X DELETE http://127.0.0.1:5000/flaskapiblog/api/v1.0/posts/13'
 @app.route('/flaskapiblog/api/v1.0/posts/<int:post_id>', methods=['DELETE'])
 @auth.login_required
@@ -169,16 +169,6 @@ def get_visitors():
     for rec in all_visitors:
         visitors.append(rec._asdict())
     return jsonify({'visitors': visitors})
-
-
-# get_visitor 2: curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/2
-visitor_actions['get visitor'] = 'curl -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/<int:visitor_id>'
-@app.route('/flaskapiblog/api/v1.0/visitors/<int:visitor_id>', methods=['GET'])
-def get_visitor(visitor_id):
-    visitor = Visitor.query.get(visitor_id)
-    if not visitor:
-        abort(404)
-    return jsonify({'visitor': visitor._asdict()})
 
 
 # get_profile with email/password or token: curl -u ss@gov.ua:ss -i http://127.0.0.1:5000/flaskapiblog/api/v1.0/visitors/my_profile
