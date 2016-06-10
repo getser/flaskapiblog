@@ -1,4 +1,4 @@
-  Test project. REST API based FLASK application to keep, add and delete visitor's posts. Temporarily available for testing at: http://getser.*******/
+  Test project. REST API based FLASK application to keep, add and delete visitor's posts.
 
 
   Description available at "/flaskapiblog/api":
